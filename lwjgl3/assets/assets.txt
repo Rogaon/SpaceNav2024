@@ -1,0 +1,16 @@
+aGreyLarge.png
+aGreyMedium4.png
+damage.ogg
+disparo.mp3
+explosion.ogg
+fondo_gameover.jpg
+fondo_juego.jpg
+fondo_menu.jpg
+meteoritosmall.png
+musica_gameover.mp3
+musica_juego.mp3
+musica_menu.mp3
+nave.png
+piano-loops.wav
+pop-sound.mp3
+proyectil.png
