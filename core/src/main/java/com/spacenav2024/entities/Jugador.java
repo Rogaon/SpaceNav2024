@@ -1,43 +1,50 @@
 package com.spacenav2024.entities;
 
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Rectangle;
 
 public class Jugador extends Entidad {
-    private float velocidad = 200;
-    private int salud = 3;
+    private int salud;
 
     public Jugador(Texture texture, float x, float y) {
         super(texture, x, y);
+        this.salud = 3;  // Establece la salud inicial del jugador (ej. 3 vidas)
+    }
+
+    // Método para actualizar la posición del jugador
+    public void setPosition(float x, float y) {
+        this.x = x;
+        this.y = y;
     }
 
     @Override
     public void update(float delta) {
-        if (Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-            x -= velocidad * delta;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-            x += velocidad * delta;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.UP)) {
-            y += velocidad * delta;
-        }
-        if (Gdx.input.isKeyPressed(Input.Keys.DOWN)) {
-            y -= velocidad * delta;
-        }
-
-        x = Math.max(0, Math.min(x, Gdx.graphics.getWidth() - texture.getWidth()));
-        y = Math.max(0, Math.min(y, Gdx.graphics.getHeight() - texture.getHeight()));
+        // Aquí podrías agregar lógica de movimiento o controles del jugador si es necesario
     }
 
+    @Override
+    public void render(SpriteBatch batch) {
+        batch.draw(texture, x, y);
+    }
+
+    // Método para recibir daño y reducir la salud del jugador
+    public void recibirDanio() {
+        salud--;
+    }
+
+    // Método para obtener la salud del jugador
     public int getSalud() {
         return salud;
     }
 
-    public void reducirSalud() {
-        if (salud > 0) {
-            salud--;
-        }
+    // Método para verificar si el jugador ha perdido todas las vidas
+    public boolean estaMuerto() {
+        return salud <= 0;
+    }
+
+    public Rectangle getRectangulo() {
+        return new Rectangle(x, y, texture.getWidth(), texture.getHeight());
     }
 }
+
