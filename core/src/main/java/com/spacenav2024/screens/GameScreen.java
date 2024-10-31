@@ -62,13 +62,13 @@ public class GameScreen implements Screen {
         this.texturaProyectil = new Texture("proyectil.png");
         this.administradorProyectiles = new AdministradorProyectiles(texturaProyectil);
 
-        this.texturaMeteoritoPequeno = new Texture("meteorito_pequeno.png");
-        this.texturaMeteoritoMediano = new Texture("meteorito_mediano.png");
-        this.texturaMeteoritoGrande = new Texture("meteorito_grande.png");
+        this.texturaMeteoritoPequeno = new Texture("meteoritosmall.png");
+        this.texturaMeteoritoMediano = new Texture("aGreyMedium4.png");
+        this.texturaMeteoritoGrande = new Texture("aGreyLarge.png");
         this.administradorMeteoritos = new AdministradorMeteoritos();
 
         this.corazon = new Texture("corazon.png");
-        this.fondo = new Texture("fondo_juego.png");
+        this.fondo = new Texture("fondo_juego.jpg");
 
         // Cargar música y sonidos
         this.musicaFondo = Gdx.audio.newMusic(Gdx.files.internal("musica_fondo.mp3"));
