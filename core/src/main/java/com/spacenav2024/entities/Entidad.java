@@ -14,8 +14,6 @@ public abstract class Entidad {
         this.y = y;
     }
 
-    public abstract void update(float delta);
-
     public void render(SpriteBatch batch) {
         batch.draw(texture, x, y);
     }
@@ -39,4 +37,6 @@ public abstract class Entidad {
     public float getHeight() {
         return texture.getHeight();
     }
+
+    public abstract void update(float delta);
 }
