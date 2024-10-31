@@ -1,22 +1,22 @@
 package com.spacenav2024.entities;
 
-import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.Gdx;
 
-public class Meteorito extends Entidad {
-    protected int impactosNecesarios;
-    protected float velocidadY;
-    protected float velocidadX;
-    public boolean eliminar;
-    public boolean impactoReciente;
+public class Meteorito extends Entidad implements Movible {
+    protected int impactosNecesarios; // Número de impactos necesarios para destruir el meteorito.
+    protected float velocidadY;       // Velocidad vertical del meteorito.
+    protected float velocidadX;       // Velocidad horizontal del meteorito.
+    public boolean eliminar;          // Indica si el meteorito debe ser eliminado.
+    public boolean impactoReciente;   // Marca si el meteorito ha colisionado recientemente.
 
     public Meteorito(Texture texture, float x, float y, int impactosNecesarios, float velocidadY) {
         super(texture, x, y);
         this.impactosNecesarios = impactosNecesarios;
         this.velocidadY = velocidadY;
-        this.velocidadX = MathUtils.random(-50, 50);
+        this.velocidadX = MathUtils.random(-50, 50); // Movimiento horizontal aleatorio.
         this.eliminar = false;
         this.impactoReciente = false;
     }
@@ -37,17 +37,20 @@ public class Meteorito extends Entidad {
         x += velocidadX * delta;
         y -= velocidadY * delta;
 
+        // Rebote en los bordes laterales
         if (x <= 0 || x + getWidth() >= Gdx.graphics.getWidth()) {
             velocidadX = -velocidadX;
         }
 
+        // Eliminar meteorito al alcanzar el borde inferior
         if (y <= 0) {
             eliminar = true;
         }
 
-        impactoReciente = false;
+        impactoReciente = false; // Restablece el estado de impacto reciente.
     }
 
+    @Override
     public Rectangle getRectangulo() {
         return new Rectangle(x, y, texture.getWidth(), texture.getHeight());
     }
