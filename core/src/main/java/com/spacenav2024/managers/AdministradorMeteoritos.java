@@ -4,10 +4,18 @@ import com.badlogic.gdx.utils.Array;
 import com.spacenav2024.entities.Meteorito;
 
 public class AdministradorMeteoritos {
-    private Array<Meteorito> meteoritos = new Array<>();
+    private Array<Meteorito> meteoritos;
+
+    public AdministradorMeteoritos() {
+        this.meteoritos = new Array<>();
+    }
 
     public void spawnMeteorito(Meteorito meteorito) {
         meteoritos.add(meteorito);
+    }
+
+    public Array<Meteorito> getMeteoritos() {
+        return meteoritos;
     }
 
     public void update(float delta) {
@@ -16,7 +24,11 @@ public class AdministradorMeteoritos {
         }
     }
 
-    public Array<Meteorito> getMeteoritos() {
-        return meteoritos;
+    public void dispose() {
+        for (Meteorito meteorito : meteoritos) {
+            meteorito.getTexture().dispose();
+        }
+        meteoritos.clear();
     }
 }
+

@@ -38,5 +38,10 @@ public abstract class Entidad {
         return texture.getHeight();
     }
 
+    public Texture getTexture() {
+        return texture;
+    }
+
     public abstract void update(float delta);
 }
+

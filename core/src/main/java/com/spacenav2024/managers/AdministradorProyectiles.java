@@ -5,36 +5,29 @@ import com.badlogic.gdx.utils.Array;
 import com.spacenav2024.entities.Proyectil;
 
 public class AdministradorProyectiles {
-    private Array<Proyectil> proyectiles = new Array<>();
-    private Texture texturaProyectil;  // Textura para el proyectil
+    private Array<Proyectil> proyectiles;
+    private Texture texturaProyectil;
 
     public AdministradorProyectiles(Texture texturaProyectil) {
         this.texturaProyectil = texturaProyectil;
+        this.proyectiles = new Array<>();
     }
 
     public void disparar(float x, float y) {
-        // Crear un nuevo proyectil con las coordenadas proporcionadas
-        Proyectil nuevoProyectil = new Proyectil(texturaProyectil, x, y);
-        proyectiles.add(nuevoProyectil);
+        proyectiles.add(new Proyectil(texturaProyectil, x, y));
+    }
+
+    public Array<Proyectil> getProyectiles() {
+        return proyectiles;
     }
 
     public void update(float delta) {
         for (Proyectil proyectil : proyectiles) {
             proyectil.update(delta);
         }
-        
-        // Eliminar proyectiles que están fuera de la pantalla
-        Array<Proyectil> proyectilesAEliminar = new Array<>();
-        for (Proyectil proyectil : proyectiles) {
-            if (proyectil.getY() > com.badlogic.gdx.Gdx.graphics.getHeight()) {
-                proyectilesAEliminar.add(proyectil);
-            }
-        }
-        
-        proyectiles.removeAll(proyectilesAEliminar, true);
     }
 
-    public Array<Proyectil> getProyectiles() {
-        return proyectiles;
+    public void dispose() {
+        texturaProyectil.dispose();
     }
 }

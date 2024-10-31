@@ -29,20 +29,14 @@ public class GameScreen implements Screen {
     private AdministradorProyectiles administradorProyectiles;
     private AdministradorMeteoritos administradorMeteoritos;
     private Texture corazon;
-    private Texture texturaJugador;
-    private Texture texturaProyectil;
-    private Texture texturaMeteoritoPequeno;
-    private Texture texturaMeteoritoMediano;
-    private Texture texturaMeteoritoGrande;
     private Texture fondo;
     private Music musicaFondo;
     private Sound sonidoDisparo;
-    private Sound sonidoPop;
     private Sound sonidoDamage;
     private Sound sonidoExplosion;
     private int puntos = 0;
     private int nivel = 1;
-    private int vidas = 3;
+    private int vidas;
     private float tiempoDisparo = 0;
     private float cooldownDisparo = 0.5f;
     private float tiempoAcumulado = 0;
@@ -55,15 +49,10 @@ public class GameScreen implements Screen {
         this.font.getData().setScale(2);
         this.font.setColor(1, 1, 1, 1);
 
-        this.texturaJugador = new Texture("nave.png");
-        this.jugador = new Jugador(texturaJugador, Gdx.graphics.getWidth() / 2, 20);
+        this.jugador = new Jugador(new Texture("nave.png"), Gdx.graphics.getWidth() / 2, 20);
+        this.vidas = jugador.getSalud();  // Salud inicial del jugador
 
-        this.texturaProyectil = new Texture("proyectil.png");
-        this.administradorProyectiles = new AdministradorProyectiles(texturaProyectil);
-
-        this.texturaMeteoritoPequeno = new Texture("meteoritosmall.png");
-        this.texturaMeteoritoMediano = new Texture("meteoritomedium.png");
-        this.texturaMeteoritoGrande = new Texture("meteoritobig.png");
+        this.administradorProyectiles = new AdministradorProyectiles(new Texture("proyectil.png"));
         this.administradorMeteoritos = new AdministradorMeteoritos();
 
         this.corazon = new Texture("corazon.png");
@@ -71,7 +60,6 @@ public class GameScreen implements Screen {
 
         this.musicaFondo = Gdx.audio.newMusic(Gdx.files.internal("musica_fondo.mp3"));
         this.sonidoDisparo = Gdx.audio.newSound(Gdx.files.internal("disparo.mp3"));
-        this.sonidoPop = Gdx.audio.newSound(Gdx.files.internal("pop-sound.mp3"));
         this.sonidoDamage = Gdx.audio.newSound(Gdx.files.internal("damage.ogg"));
         this.sonidoExplosion = Gdx.audio.newSound(Gdx.files.internal("explosion.ogg"));
 
@@ -90,6 +78,7 @@ public class GameScreen implements Screen {
         font.draw(batch, "Puntaje: " + puntos, Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 10);
         font.draw(batch, "Nivel: " + nivel, Gdx.graphics.getWidth() - 150, Gdx.graphics.getHeight() - 40);
 
+        // Dibujar corazones para las vidas
         for (int i = 0; i < vidas; i++) {
             batch.draw(corazon, 10 + i * 40, 10);
         }
@@ -108,51 +97,52 @@ public class GameScreen implements Screen {
         administradorMeteoritos.update(delta);
         administradorProyectiles.update(delta);
 
-        puntos += SistemaColisiones.manejarColisiones(jugador, administradorMeteoritos.getMeteoritos(), administradorProyectiles.getProyectiles());
+        puntos += SistemaColisiones.manejarColisiones(jugador, administradorMeteoritos.getMeteoritos(), administradorProyectiles.getProyectiles(), sonidoDamage);
+        vidas = jugador.getSalud(); // Sincronizar visualización de vidas
 
-        if (SistemaColisiones.detectarColisionConMeteorito(jugador, administradorMeteoritos.getMeteoritos())) {
-            vidas--;
-            sonidoDamage.play();
-
-            if (vidas <= 0) {
-                musicaFondo.stop();
-                sonidoExplosion.play();
-                game.setScreen(new GameOverScreen(game));
-                return;
-            }
+        // Cambiar a Game Over solo cuando vidas llegue a 0
+        if (vidas <= 0) {
+            musicaFondo.stop();
+            sonidoExplosion.play();
+            game.setScreen(new GameOverScreen(game));
+            return;
         }
 
+        // Incremento de nivel cuando se alcanzan 100 puntos
         if (puntos >= 100) {
             nivel++;
             puntos = 0;
-            tiempoGeneracionMeteorito *= 0.9f;
-            administradorMeteoritos.getMeteoritos().clear();
+            tiempoGeneracionMeteorito *= 0.9f;  // Reducir el intervalo para más meteoritos
+            administradorMeteoritos.getMeteoritos().clear();  // Limpiar meteoritos de pantalla
             administradorProyectiles.getProyectiles().clear();
-            jugador.setPosition(Gdx.graphics.getWidth() / 2 - jugador.getWidth() / 2, 20);
+            jugador.setPosition(Gdx.graphics.getWidth() / 2 - jugador.getWidth() / 2, 20);  // Reposicionar jugador
         }
 
+        // Generación de meteoritos en intervalos de tiempo
         tiempoAcumulado += delta;
         if (tiempoAcumulado >= tiempoGeneracionMeteorito) {
-            int meteoritosGenerados = MathUtils.random(1, nivel);
+            int meteoritosGenerados = MathUtils.random(1, nivel);  // Generar más meteoritos en niveles altos
             for (int i = 0; i < meteoritosGenerados; i++) {
-                float xAleatorio = MathUtils.random(0, Gdx.graphics.getWidth() - texturaMeteoritoPequeno.getWidth());
+                float xAleatorio = MathUtils.random(0, Gdx.graphics.getWidth() - new Texture("meteoritosmall.png").getWidth());
                 float velocidadAleatoria = 100 + MathUtils.random(0, nivel * 20);
 
+                // Creación aleatoria de meteoritos de diferentes tamaños
                 Meteorito meteorito;
                 int tipoMeteorito = MathUtils.random(0, 2);
                 if (tipoMeteorito == 0) {
-                    meteorito = new MeteoritoPequeno(texturaMeteoritoPequeno, xAleatorio, Gdx.graphics.getHeight(), velocidadAleatoria);
+                    meteorito = new MeteoritoPequeno(new Texture("meteoritosmall.png"), xAleatorio, Gdx.graphics.getHeight(), velocidadAleatoria);
                 } else if (tipoMeteorito == 1) {
-                    meteorito = new MeteoritoMediano(texturaMeteoritoMediano, xAleatorio, Gdx.graphics.getHeight(), velocidadAleatoria);
+                    meteorito = new MeteoritoMediano(new Texture("meteoritomedium.png"), xAleatorio, Gdx.graphics.getHeight(), velocidadAleatoria);
                 } else {
-                    meteorito = new MeteoritoGrande(texturaMeteoritoGrande, xAleatorio, Gdx.graphics.getHeight(), velocidadAleatoria);
+                    meteorito = new MeteoritoGrande(new Texture("meteoritobig.png"), xAleatorio, Gdx.graphics.getHeight(), velocidadAleatoria);
                 }
 
                 administradorMeteoritos.spawnMeteorito(meteorito);
             }
-            tiempoAcumulado = 0;
+            tiempoAcumulado = 0;  // Reiniciar el contador de tiempo
         }
 
+        // Control de disparo con cooldown
         tiempoDisparo += delta;
         if (Gdx.input.isKeyPressed(Input.Keys.SPACE) && tiempoDisparo >= cooldownDisparo) {
             administradorProyectiles.disparar(jugador.getX() + jugador.getWidth() / 2, jugador.getY() + jugador.getHeight());
@@ -166,15 +156,12 @@ public class GameScreen implements Screen {
         batch.dispose();
         font.dispose();
         corazon.dispose();
-        texturaJugador.dispose();
-        texturaProyectil.dispose();
-        texturaMeteoritoPequeno.dispose();
-        texturaMeteoritoMediano.dispose();
-        texturaMeteoritoGrande.dispose();
+        jugador.getTexture().dispose();
+        administradorProyectiles.dispose();
+        administradorMeteoritos.dispose();
         fondo.dispose();
         musicaFondo.dispose();
         sonidoDisparo.dispose();
-        sonidoPop.dispose();
         sonidoDamage.dispose();
         sonidoExplosion.dispose();
     }
