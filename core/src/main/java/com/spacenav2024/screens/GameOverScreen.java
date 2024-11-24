@@ -3,13 +3,14 @@ package com.spacenav2024.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.audio.Music;
 import com.spacenav2024.MainGame;
+import com.spacenav2024.utils.ConfiguracionJuego;
 
 public class GameOverScreen implements Screen {
     private MainGame game;
@@ -17,6 +18,7 @@ public class GameOverScreen implements Screen {
     private BitmapFont font;
     private Texture fondo;
     private Music musicaGameOver;
+    private ConfiguracionJuego config;
 
     public GameOverScreen(MainGame game) {
         this.game = game;
@@ -24,6 +26,9 @@ public class GameOverScreen implements Screen {
         this.font = new BitmapFont();
         this.fondo = new Texture("fondo_gameover.jpg");  // Cargar fondo de Game Over
         this.musicaGameOver = Gdx.audio.newMusic(Gdx.files.internal("musica_gameover.mp3"));  // Cargar música de Game Over
+
+        // Configuración del Singleton
+        this.config = ConfiguracionJuego.getInstancia();
 
         // Configurar la música de Game Over
         musicaGameOver.setLooping(true);
@@ -55,6 +60,10 @@ public class GameOverScreen implements Screen {
         // Manejar la selección del jugador
         if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
             musicaGameOver.stop();             // Detener música de Game Over
+
+            // Reiniciar configuración del juego utilizando el Singleton
+            config.setNivelActual(1);         // Reiniciar nivel
+            config.setPuntajeActual(0);       // Reiniciar puntaje
             game.setScreen(new GameScreen(game));  // Reiniciar el juego
         } else if (Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
             Gdx.app.exit();  // Salir del juego
@@ -75,3 +84,4 @@ public class GameOverScreen implements Screen {
     @Override public void resume() {}
     @Override public void hide() {}
 }
+

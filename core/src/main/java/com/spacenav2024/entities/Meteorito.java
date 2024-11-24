@@ -31,6 +31,10 @@ public class Meteorito extends Entidad implements Movible {
     public boolean estaDestruido() {
         return eliminar;
     }
+    
+    public boolean estaFueraPantalla() {
+        return y + getHeight() < 0; // Devuelve true si el meteorito está completamente fuera de la pantalla
+    }
 
     @Override
     public void update(float delta) {
