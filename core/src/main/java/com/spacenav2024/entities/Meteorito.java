@@ -5,20 +5,34 @@ import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Gdx;
 
-public class Meteorito extends Entidad implements Movible {
-    protected int impactosNecesarios; // Número de impactos necesarios para destruir el meteorito.
-    protected float velocidadY;       // Velocidad vertical del meteorito.
-    protected float velocidadX;       // Velocidad horizontal del meteorito.
-    public boolean eliminar;          // Indica si el meteorito debe ser eliminado.
-    public boolean impactoReciente;   // Marca si el meteorito ha colisionado recientemente.
+public abstract class Meteorito extends Entidad implements Movible {
+    protected int impactosNecesarios;
+    protected float velocidadY;
+    protected float velocidadX;
+    public boolean eliminar;
 
     public Meteorito(Texture texture, float x, float y, int impactosNecesarios, float velocidadY) {
         super(texture, x, y);
         this.impactosNecesarios = impactosNecesarios;
         this.velocidadY = velocidadY;
-        this.velocidadX = MathUtils.random(-50, 50); // Movimiento horizontal aleatorio.
+        this.velocidadX = MathUtils.random(-50, 50);
         this.eliminar = false;
-        this.impactoReciente = false;
+    }
+
+    @Override
+    public void update(float delta) {
+        x += velocidadX * delta;
+        y -= velocidadY * delta;
+
+        // Rebote en bordes laterales
+        if (x <= 0 || x + getWidth() >= Gdx.graphics.getWidth()) {
+            velocidadX = -velocidadX;
+        }
+
+        // Marcar para eliminar si llega al borde inferior
+        if (y <= 0) {
+            eliminar = true;
+        }
     }
 
     public void recibirImpacto() {
@@ -31,27 +45,9 @@ public class Meteorito extends Entidad implements Movible {
     public boolean estaDestruido() {
         return eliminar;
     }
-    
+
     public boolean estaFueraPantalla() {
-        return y + getHeight() < 0; // Devuelve true si el meteorito está completamente fuera de la pantalla
-    }
-
-    @Override
-    public void update(float delta) {
-        x += velocidadX * delta;
-        y -= velocidadY * delta;
-
-        // Rebote en los bordes laterales
-        if (x <= 0 || x + getWidth() >= Gdx.graphics.getWidth()) {
-            velocidadX = -velocidadX;
-        }
-
-        // Eliminar meteorito al alcanzar el borde inferior
-        if (y <= 0) {
-            eliminar = true;
-        }
-
-        impactoReciente = false; // Restablece el estado de impacto reciente.
+        return y + getHeight() < 0;
     }
 
     @Override
@@ -59,7 +55,6 @@ public class Meteorito extends Entidad implements Movible {
         return new Rectangle(x, y, texture.getWidth(), texture.getHeight());
     }
 
-    // Métodos getter y setter para velocidadX y velocidadY
     public float getVelocidadX() {
         return velocidadX;
     }

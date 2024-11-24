@@ -4,7 +4,6 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.Rectangle;
 
 public class MeteoritoGrande extends Meteorito {
-
     public MeteoritoGrande(Texture texture, float x, float y, float velocidad) {
         super(texture, x, y, 3, velocidad); // Requiere 3 impactos para destruirse
     }
@@ -20,5 +19,5 @@ public class MeteoritoGrande extends Meteorito {
             texture.getHeight() * (1 - reductionFactor)
         );
     }
+    
 }
-

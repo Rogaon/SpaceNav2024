@@ -16,6 +16,9 @@ public class Jugador extends Entidad implements Movible {
 
     public void recibirDanio(int cantidad) {
         salud -= cantidad;
+        if (salud < 0) {
+            salud = 0; // Asegurar que no haya valores negativos
+        }
     }
 
     public int getSalud() {

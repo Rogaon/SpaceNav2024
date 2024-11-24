@@ -3,12 +3,11 @@ package com.spacenav2024.screens;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.GlyphLayout;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.audio.Music;
 import com.spacenav2024.MainGame;
 import com.spacenav2024.utils.ConfiguracionJuego;
 
@@ -18,6 +17,7 @@ public class MainMenuScreen implements Screen {
     private BitmapFont font;
     private Texture fondo;
     private Music musicaMenu;
+    private ConfiguracionJuego config;
 
     public MainMenuScreen(MainGame game) {
         this.game = game;
@@ -26,8 +26,11 @@ public class MainMenuScreen implements Screen {
         this.fondo = new Texture("fondo_menu.jpg");
         this.musicaMenu = Gdx.audio.newMusic(Gdx.files.internal("musica_menu.mp3"));
 
-        // Reproducir música si los sonidos están activados
-        if (ConfiguracionJuego.getInstancia().isSonidosActivados()) {
+        // Configuración del Singleton
+        this.config = ConfiguracionJuego.getInstancia();
+
+        // Configurar la música del menú
+        if (config.isSonidosActivados()) {
             musicaMenu.setLooping(true);
             musicaMenu.play();
         }
@@ -40,43 +43,27 @@ public class MainMenuScreen implements Screen {
         batch.begin();
         batch.draw(fondo, 0, 0, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
-        // Configurar texto
+        // Posicionar texto más abajo
         font.getData().setScale(2);
-
-        String mensajeBienvenida = "Bienvenido a Space Navigation!";
-        String mensajeIniciar = "Presiona ENTER para comenzar";
-        String mensajeSonido = "Presiona S para activar/desactivar sonidos";
-
-        GlyphLayout layoutBienvenida = new GlyphLayout(font, mensajeBienvenida);
-        GlyphLayout layoutIniciar = new GlyphLayout(font, mensajeIniciar);
-        GlyphLayout layoutSonido = new GlyphLayout(font, mensajeSonido);
-
-        float xBienvenida = (Gdx.graphics.getWidth() - layoutBienvenida.width) / 2;
-        float xIniciar = (Gdx.graphics.getWidth() - layoutIniciar.width) / 2;
-        float xSonido = (Gdx.graphics.getWidth() - layoutSonido.width) / 2;
-
-        // Ajustar las posiciones 
-        font.draw(batch, layoutBienvenida, xBienvenida, Gdx.graphics.getHeight() / 3f + 50);
-        font.draw(batch, layoutIniciar, xIniciar, Gdx.graphics.getHeight() / 3f);
-        font.draw(batch, layoutSonido, xSonido, Gdx.graphics.getHeight() / 3f - 50);
+        font.draw(batch, "Presiona ENTER para iniciar el juego", Gdx.graphics.getWidth() / 2f - 150, Gdx.graphics.getHeight() / 2f - 50);
+        font.draw(batch, "Presiona S para activar/desactivar sonidos", Gdx.graphics.getWidth() / 2f - 200, Gdx.graphics.getHeight() / 2f - 100);
 
         batch.end();
 
-        // Manejar entrada del usuario
-        if (Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
-            musicaMenu.stop();
+        // Manejo de entrada del jugador
+        if (Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
             game.setScreen(new GameScreen(game));
-        }
-
-        if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
-            ConfiguracionJuego config = ConfiguracionJuego.getInstancia();
-            config.setSonidosActivados(!config.isSonidosActivados());
-            if (config.isSonidosActivados()) {
+            musicaMenu.stop();
+        } else if (Gdx.input.isKeyJustPressed(Input.Keys.S)) {
+            boolean estadoSonidos = config.isSonidosActivados();
+            config.setSonidosActivados(!estadoSonidos);
+            if (!estadoSonidos) {
                 musicaMenu.play();
             } else {
-                musicaMenu.pause();
+                musicaMenu.stop();
             }
         }
+        
     }
 
     @Override
@@ -89,12 +76,17 @@ public class MainMenuScreen implements Screen {
 
     @Override
     public void show() {}
+
     @Override
     public void resize(int width, int height) {}
+
     @Override
     public void pause() {}
+
     @Override
     public void resume() {}
+
     @Override
     public void hide() {}
 }
+
