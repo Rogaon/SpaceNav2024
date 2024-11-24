@@ -4,12 +4,17 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.Gdx;
+import com.spacenav2024.strategies.EstrategiaMovimiento;
+import com.spacenav2024.strategies.MovimientoLineal;
+import com.spacenav2024.strategies.MovimientoHorizontal;
+import com.spacenav2024.strategies.MovimientoZigzag;
 
 public abstract class Meteorito extends Entidad implements Movible {
     protected int impactosNecesarios;
     protected float velocidadY;
     protected float velocidadX;
     public boolean eliminar;
+    private EstrategiaMovimiento estrategia;
 
     public Meteorito(Texture texture, float x, float y, int impactosNecesarios, float velocidadY) {
         super(texture, x, y);
@@ -19,22 +24,23 @@ public abstract class Meteorito extends Entidad implements Movible {
         this.eliminar = false;
     }
 
-    @Override
-    public void update(float delta) {
-        x += velocidadX * delta;
-        y -= velocidadY * delta;
+    public void setEstrategia(EstrategiaMovimiento estrategia) {
+        this.estrategia = estrategia;
+    }   
 
-        // Rebote en bordes laterales
-        if (x <= 0 || x + getWidth() >= Gdx.graphics.getWidth()) {
-            velocidadX = -velocidadX;
+    
+   @Override
+    public void update(float delta) {
+        if (estrategia != null) {
+            estrategia.mover(this, delta);
         }
 
-        // Marcar para eliminar si llega al borde inferior
-        if (y <= 0) {
-            eliminar = true;
+        // Eliminar meteorito si está fuera de la pantalla
+        if (y + getHeight() < 0) {
+        eliminar = true;
         }
     }
-
+    
     public void recibirImpacto() {
         impactosNecesarios--;
         if (impactosNecesarios <= 0) {
