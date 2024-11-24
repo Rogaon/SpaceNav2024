@@ -1,13 +1,34 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
-package com.spacenav2024.utils;
-
-/**
- *
- * @author samue
- */
+// Clase Singleton: ConfiguracionJuego.java
 public class ConfiguracionJuego {
-    
+    private static ConfiguracionJuego instancia;
+    private int nivelActual;
+    private boolean sonidosActivados;
+
+    private ConfiguracionJuego() {
+        nivelActual = 1; // Nivel inicial
+        sonidosActivados = true; // Sonidos activados por defecto
+    }
+
+    public static ConfiguracionJuego getInstancia() {
+        if (instancia == null) {
+            instancia = new ConfiguracionJuego();
+        }
+        return instancia;
+    }
+
+    public int getNivelActual() {
+        return nivelActual;
+    }
+
+    public void setNivelActual(int nivel) {
+        this.nivelActual = nivel;
+    }
+
+    public boolean isSonidosActivados() {
+        return sonidosActivados;
+    }
+
+    public void setSonidosActivados(boolean estado) {
+        this.sonidosActivados = estado;
+    }
 }
